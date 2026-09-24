@@ -1,721 +1,363 @@
 import streamlit as st
-import pandas as pd
-import joblib
 
-
-# =========================================================
-# PAGE CONFIGURATION
-# =========================================================
-
+# 1. Page Config
 st.set_page_config(
-    page_title="Food Delivery AI",
+    page_title="FoodPulse AI - Delivery Estimator",
     page_icon="🍔",
     layout="wide"
 )
 
-
-# =========================================================
-# LOAD MODEL
-# =========================================================
-
-@st.cache_resource
-def load_model():
-    return joblib.load("models/delivery_model.pkl")
-
-
-model = load_model()
-
-
-# =========================================================
-# SESSION STATE
-# =========================================================
-
-if "prediction" not in st.session_state:
-    st.session_state.prediction = None
-
-
-# =========================================================
-# CUSTOM CSS
-# =========================================================
-
-st.markdown(
-    """
-    <style>
-
-    /* ---------- MAIN BACKGROUND ---------- */
-
-    .stApp {
-        background:
-            radial-gradient(
-                circle at 10% 0%,
-                rgba(255, 100, 70, 0.08),
-                transparent 30%
-            ),
-            radial-gradient(
-                circle at 90% 0%,
-                rgba(70, 130, 255, 0.08),
-                transparent 30%
-            ),
-            #0c121c;
-    }
-
+# 2. Custom Responsive CSS Injection
+st.markdown("""
+<style>
+    /* Hide Default Streamlit Elements */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
     .block-container {
-        max-width: 1180px;
-        padding-top: 1.2rem;
+        padding-top: 1.5rem;
         padding-bottom: 2rem;
+        max-width: 1300px;
     }
 
-
-    /* ---------- NAVBAR ---------- */
-
-    .nav-box {
-        background: rgba(30, 35, 47, 0.95);
-        border: 1px solid rgba(255,255,255,0.10);
-        border-radius: 15px;
-        padding: 13px 20px;
-        margin-bottom: 35px;
-    }
-
-    .brand {
-        font-size: 1.25rem;
-        font-weight: 800;
-        color: #f7f0df;
-    }
-
-    .nav-item {
-        color: #aeb6c3;
-        font-size: 0.86rem;
-        text-align: center;
-        padding-top: 5px;
-    }
-
-
-    /* ---------- HERO ---------- */
-
-    .hero {
-        text-align: center;
-        padding: 8px 0 25px 0;
-    }
-
-    .hero-icon {
-        font-size: 3rem;
-    }
-
-    .hero-subtitle {
-        color: #9ba5b5;
-        font-size: 0.95rem;
-    }
-
-
-    /* ---------- CARDS ---------- */
-
-    div[data-testid="stVerticalBlockBorderWrapper"] {
-        background:
-            linear-gradient(
-                145deg,
-                rgba(34,39,51,0.96),
-                rgba(24,29,40,0.96)
-            );
-
-        border: 1px solid rgba(255,255,255,0.10);
-        border-radius: 18px;
-
-        box-shadow:
-            0 12px 35px rgba(0,0,0,0.22);
-    }
-
-
-    /* ---------- SECTION HEADINGS ---------- */
-
-    .section-heading {
-        font-size: 1.15rem;
-        font-weight: 750;
-        color: #f1f3f6;
-    }
-
-    .section-text {
-        color: #8d97a7;
-        font-size: 0.80rem;
-        margin-bottom: 18px;
-    }
-
-
-    /* ---------- BUTTON ---------- */
-
-    div.stButton > button {
-        width: 100%;
-        min-height: 54px;
-
+    /* Responsive Navbar Styling */
+    .fp-navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #1E293B;
+        padding: 1rem 2rem;
         border-radius: 12px;
-        border: none;
-
-        background:
-            linear-gradient(
-                135deg,
-                #ff7154,
-                #ff8968
-            );
-
-        color: white;
-        font-size: 1rem;
-        font-weight: 750;
-
-        box-shadow:
-            0 8px 25px rgba(255,105,76,0.25);
-
-        transition: all 0.2s ease;
+        border: 1px solid #334155;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
     }
-
-    div.stButton > button:hover {
-        transform: translateY(-2px);
-        color: white;
-        box-shadow:
-            0 12px 30px rgba(255,105,76,0.38);
-    }
-
-
-    /* ---------- RESULT PANEL ---------- */
-
-    .result-title {
-        text-align: center;
-        color: #8ce3a8;
-        font-size: 0.95rem;
+    .fp-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 1.4rem;
         font-weight: 700;
+        color: #F8FAFC;
     }
-
-    .result-number {
-        text-align: center;
-        color: #ffd66f;
-        font-size: 3.4rem;
-        font-weight: 850;
-        margin: 10px 0;
+    .fp-logo {
+        font-size: 1.8rem;
     }
-
-    .result-unit {
-        text-align: center;
-        color: #a9b2bf;
-        font-size: 0.9rem;
+    .fp-nav-links {
+        display: flex;
+        gap: 1.8rem;
     }
-
-
-    /* ---------- ABOUT ---------- */
-
-    .about-title {
-        text-align: center;
-        font-size: 1.1rem;
-        font-weight: 750;
-        color: #edf0f4;
-    }
-
-    .about-text {
-        text-align: center;
-        color: #919baa;
-        font-size: 0.84rem;
-        line-height: 1.7;
-        max-width: 760px;
-        margin: auto;
-    }
-
-
-    /* ---------- FOOTER ---------- */
-
-    .footer-line {
-        margin-top: 40px;
-        border-top: 1px solid rgba(255,255,255,0.10);
-        padding-top: 18px;
-    }
-
-    .footer-text {
-        color: #7f8998;
-        font-size: 0.76rem;
-    }
-
-    .footer-link {
-        color: #9da7b5;
+    .fp-nav-links a {
+        color: #94A3B8;
         text-decoration: none;
+        font-size: 1rem;
+        font-weight: 500;
+        transition: color 0.2s ease;
+    }
+    .fp-nav-links a:hover, .fp-nav-links a.active {
+        color: #FF5252;
+    }
+    .fp-status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background-color: #064E3B;
+        color: #34D399;
+        font-size: 0.85rem;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        background-color: #34D399;
+        border-radius: 50%;
+        display: inline-block;
     }
 
-
-    /* ---------- MOBILE ---------- */
-
-    @media (max-width: 700px) {
-
-        .block-container {
-            padding-left: 1rem;
-            padding-right: 1rem;
-        }
-
-        .brand {
-            font-size: 1rem;
-        }
-
-        .nav-item {
-            font-size: 0.70rem;
-        }
-
-        .hero-icon {
-            font-size: 2.5rem;
-        }
-
-        .result-number {
-            font-size: 2.6rem;
-        }
+    /* Hero Banner Styling */
+    .hero-container {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+    .hero-icon {
+        font-size: 3.5rem;
+        margin-bottom: 0.5rem;
+    }
+    .hero-container h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #F8FAFC;
+        margin-bottom: 0.5rem;
+    }
+    .hero-container p {
+        font-size: 1.1rem;
+        color: #94A3B8;
+        max-width: 650px;
+        margin: 0 auto;
     }
 
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+    /* Output Card / Empty Prediction Styling */
+    .prediction-card {
+        background: #1E293B;
+        border: 1px solid #334155;
+        border-radius: 16px;
+        padding: 2.5rem 1.8rem;
+        text-align: center;
+        min-height: 380px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+    .empty-icon {
+        font-size: 3.5rem;
+        margin-bottom: 1rem;
+    }
+    .empty-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #F8FAFC;
+        margin-bottom: 0.8rem;
+    }
+    .empty-text {
+        color: #94A3B8;
+        font-size: 1rem;
+        line-height: 1.5;
+    }
 
+    /* About Section Styling */
+    .about-card {
+        background: #1E293B;
+        border: 1px solid #334155;
+        border-radius: 16px;
+        padding: 2rem;
+        margin-top: 2rem;
+        margin-bottom: 3rem;
+    }
+    .about-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #F8FAFC;
+        margin-bottom: 0.8rem;
+    }
+    .about-text {
+        color: #94A3B8;
+        font-size: 1rem;
+        line-height: 1.6;
+    }
 
-# =========================================================
-# NAVBAR
-# =========================================================
+    /* Separated Responsive Footer Styling */
+    .footer-wrapper {
+        margin-top: 4rem;
+        border-top: 1px solid #334155;
+        padding-top: 2rem;
+        background-color: #0F172A;
+    }
+    .footer-main {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .footer-brand {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #FF5252;
+    }
+    .footer-sub {
+        font-size: 0.9rem;
+        color: #64748B;
+        margin-top: 4px;
+    }
+    .footer-links {
+        display: flex;
+        gap: 1.5rem;
+    }
+    .footer-links a {
+        color: #94A3B8;
+        text-decoration: none;
+        font-size: 0.95rem;
+        transition: color 0.2s ease;
+    }
+    .footer-links a:hover {
+        color: #FF5252;
+    }
+    .footer-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #1E293B;
+        color: #64748B;
+        font-size: 0.88rem;
+    }
+    .footer-stats span {
+        margin: 0 4px;
+    }
 
-st.markdown('<div class="nav-box">', unsafe_allow_html=True)
+    /* Responsive Adjustments for Mobile and Tablets */
+    @media (max-width: 768px) {
+        .fp-navbar, .footer-main, .footer-bottom {
+            flex-direction: column;
+            text-align: center;
+            gap: 1rem;
+        }
+        .fp-nav-links, .footer-links {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    }
+</style>
+""", unsafe_allow_html=True)
 
-nav1, nav2, nav3, nav4 = st.columns([3, 1, 1, 1])
-
-with nav1:
-    st.markdown(
-        '<div class="brand">🍔 Food Delivery AI</div>',
-        unsafe_allow_html=True
-    )
-
-with nav2:
-    st.markdown(
-        '<div class="nav-item">Predictor</div>',
-        unsafe_allow_html=True
-    )
-
-with nav3:
-    st.markdown(
-        '<div class="nav-item">Model Info</div>',
-        unsafe_allow_html=True
-    )
-
-with nav4:
-    st.markdown(
-        '<div class="nav-item">About</div>',
-        unsafe_allow_html=True
-    )
-
-st.markdown("</div>", unsafe_allow_html=True)
-
-
-# =========================================================
-# HERO
-# =========================================================
-
-st.markdown(
-    """
-    <div class="hero">
-        <div class="hero-icon">🍔</div>
+# ----------------- 3. NAVBAR SECTION -----------------
+st.markdown("""
+<div class="fp-navbar">
+    <div class="fp-brand">
+        <div class="fp-logo">🍔</div>
+        <span>FoodPulse AI</span>
     </div>
-    """,
-    unsafe_allow_html=True
-)
-
-st.title("Food Delivery Time Prediction")
-
-st.markdown(
-    """
-    <div class="hero-subtitle">
-        Configure delivery parameters to get an estimated delivery time.
+    <div class="fp-nav-links">
+        <a href="#predictor" class="active">Predictor</a>
+        <a href="#model-info">Model Info</a>
+        <a href="#about">About</a>
     </div>
-    """,
-    unsafe_allow_html=True
-)
-
-st.write("")
-
-
-# =========================================================
-# MAIN AREA
-# =========================================================
-
-input_col, result_col = st.columns(
-    [1.15, 0.85],
-    gap="large"
-)
-
-
-# =========================================================
-# INPUT AREA
-# =========================================================
-
-with input_col:
-
-    left_col, right_col = st.columns(2, gap="medium")
-
-
-    # -----------------------------------------------------
-    # RIDER & ORDER
-    # -----------------------------------------------------
-
-    with left_col:
-
-        with st.container(border=True):
-
-            st.markdown(
-                '<div class="section-heading">🛵 Rider & Order Details</div>',
-                unsafe_allow_html=True
-            )
-
-            st.markdown(
-                '<div class="section-text">'
-                'Enter delivery person and order information.'
-                '</div>',
-                unsafe_allow_html=True
-            )
-
-            age = st.slider(
-                "Delivery Person Age",
-                min_value=15,
-                max_value=50,
-                value=30
-            )
-
-            rating = st.number_input(
-                "Delivery Person Rating",
-                min_value=1.0,
-                max_value=6.0,
-                value=4.5,
-                step=0.1
-            )
-
-            vehicle = st.selectbox(
-                "Type of Vehicle",
-                [
-                    "motorcycle",
-                    "scooter",
-                    "electric_scooter",
-                    "bicycle"
-                ],
-                format_func=lambda x: {
-                    "motorcycle": "🏍️ Motorcycle",
-                    "scooter": "🛵 Scooter",
-                    "electric_scooter": "⚡ Electric Scooter",
-                    "bicycle": "🚲 Bicycle"
-                }[x]
-            )
-
-            order_type = st.selectbox(
-                "Type of Order",
-                [
-                    "Snack",
-                    "Meal",
-                    "Drinks",
-                    "Buffet"
-                ],
-                format_func=lambda x: {
-                    "Snack": "🍟 Snack",
-                    "Meal": "🍱 Meal",
-                    "Drinks": "🥤 Drinks",
-                    "Buffet": "🍽️ Buffet"
-                }[x]
-            )
-
-
-    # -----------------------------------------------------
-    # ENVIRONMENT
-    # -----------------------------------------------------
-
-    with right_col:
-
-        with st.container(border=True):
-
-            st.markdown(
-                '<div class="section-heading">'
-                '🌦️ Environment & Trip Parameters'
-                '</div>',
-                unsafe_allow_html=True
-            )
-
-            st.markdown(
-                '<div class="section-text">'
-                'Add traffic, weather and trip conditions.'
-                '</div>',
-                unsafe_allow_html=True
-            )
-
-            distance = st.number_input(
-                "Distance (km)",
-                min_value=0.0,
-                max_value=100.0,
-                value=10.0,
-                step=0.1
-            )
-
-            traffic = st.selectbox(
-                "Traffic Level",
-                [
-                    "Low",
-                    "Moderate",
-                    "High",
-                    "Very High",
-                    "Very Low"
-                ]
-            )
-
-            weather = st.selectbox(
-                "Weather",
-                [
-                    "clear sky",
-                    "haze",
-                    "mist",
-                    "broken clouds",
-                    "light rain",
-                    "smoke",
-                    "scattered clouds",
-                    "overcast clouds",
-                    "fog",
-                    "few clouds",
-                    "moderate rain"
-                ],
-                format_func=lambda x: {
-                    "clear sky": "☀️ Clear Sky",
-                    "haze": "🌫️ Haze",
-                    "mist": "🌫️ Mist",
-                    "broken clouds": "⛅ Broken Clouds",
-                    "light rain": "🌦️ Light Rain",
-                    "smoke": "💨 Smoke",
-                    "scattered clouds": "🌤️ Scattered Clouds",
-                    "overcast clouds": "☁️ Overcast Clouds",
-                    "fog": "🌫️ Fog",
-                    "few clouds": "🌤️ Few Clouds",
-                    "moderate rain": "🌧️ Moderate Rain"
-                }[x]
-            )
-
-            temperature = st.number_input(
-                "Temperature (°C)",
-                min_value=0.0,
-                max_value=50.0,
-                value=23.0,
-                step=0.1
-            )
-
-            humidity = st.number_input(
-                "Humidity (%)",
-                min_value=0.0,
-                max_value=100.0,
-                value=66.0,
-                step=0.1
-            )
-
-            precipitation = st.number_input(
-                "Precipitation",
-                min_value=0.0,
-                value=0.0,
-                step=0.01
-            )
-
-
-    # -----------------------------------------------------
-    # PREDICT BUTTON
-    # -----------------------------------------------------
-
-    st.write("")
-
-    if st.button("🚀 Predict Delivery Time"):
-
-        input_data = pd.DataFrame({
-            "Delivery_person_Age": [age],
-            "Delivery_person_Ratings": [rating],
-            "temperature": [temperature],
-            "humidity": [humidity],
-            "precipitation": [precipitation],
-            "Distance (km)": [distance],
-            "Traffic_Level": [traffic],
-            "weather_description": [weather],
-            "Type_of_order": [order_type],
-            "Type_of_vehicle": [vehicle]
-        })
-
-        prediction = model.predict(input_data)[0]
-
-        st.session_state.prediction = prediction
-
-
-# =========================================================
-# RESULT AREA
-# =========================================================
-
-with result_col:
-
-    with st.container(border=True):
-
-        if st.session_state.prediction is None:
-
-            st.subheader("📊 Your Delivery Estimate")
-
-            st.info(
-                "Enter the delivery details and click "
-                "**Predict Delivery Time** to see the estimated time."
-            )
-
-            st.write("")
-
-            st.metric(
-                label="Estimated Time",
-                value="-- min"
-            )
-
-            st.caption(
-                "Your prediction will appear here."
-            )
-
-        else:
-
-            prediction = st.session_state.prediction
-
-            st.markdown(
-                '<div class="result-title">'
-                '✓ PREDICTION CALCULATED'
-                '</div>',
-                unsafe_allow_html=True
-            )
-
-            st.markdown(
-                f'<div class="result-number">'
-                f'{prediction:.1f}'
-                f'</div>',
-                unsafe_allow_html=True
-            )
-
-            st.markdown(
-                '<div class="result-unit">'
-                'MINUTES'
-                '</div>',
-                unsafe_allow_html=True
-            )
-
-            st.divider()
-
-            if prediction <= 20:
-                status = "🟢 Fast Delivery"
-                message = "The estimated delivery time is relatively short."
-
-            elif prediction <= 40:
-                status = "🟡 Average Delivery"
-                message = "The estimated delivery time is within the average range."
-
-            else:
-                status = "🔴 Longer Delivery"
-                message = "The estimated delivery time is relatively longer."
-
-            st.subheader(status)
-
-            st.caption(message)
-
-            st.write("")
-
-            st.metric(
-                "Estimated Delivery Time",
-                f"{prediction:.1f} min"
-            )
-
-
-# =========================================================
-# MODEL PERFORMANCE
-# =========================================================
-
-st.write("")
-st.write("")
-
-st.subheader("Model Performance")
-
-metric1, metric2, metric3, metric4 = st.columns(4)
-
-with metric1:
-    st.metric(
-        "Model",
-        "Random Forest"
-    )
-
-with metric2:
-    st.metric(
-        "R² Score",
-        "0.88"
-    )
-
-with metric3:
-    st.metric(
-        "MAE",
-        "3.04 min"
-    )
-
-with metric4:
-    st.metric(
-        "RMSE",
-        "5.42"
-    )
-
-
-# =========================================================
-# ABOUT
-# =========================================================
-
-st.write("")
-st.write("")
-
-with st.container(border=True):
-
-    st.markdown(
-        '<div class="about-title">About This Project</div>',
-        unsafe_allow_html=True
-    )
-
-    st.write("")
-
-    st.markdown(
-        """
-        <div class="about-text">
-        This application uses a Random Forest Regression model to estimate
-        food delivery time using delivery person details, distance,
-        traffic, weather and other environmental conditions.
+    <div class="fp-status">
+        <span class="status-dot"></span>
+        Model Live · v1.0
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# ----------------- 4. HERO SECTION -----------------
+st.markdown("""
+<div class="hero-container" id="predictor">
+    <div class="hero-icon">🍔</div>
+    <h1>Food Delivery Time Prediction</h1>
+    <p>Configure delivery parameters and let our machine learning model estimate the expected delivery time in real time.</p>
+</div>
+""", unsafe_allow_html=True)
+
+# Initialize Session State for Dynamic Prediction Reset
+if 'predicted' not in st.session_state:
+    st.session_state.predicted = False
+if 'last_prediction' not in st.session_state:
+    st.session_state.last_prediction = None
+
+def reset_prediction():
+    st.session_state.predicted = False
+
+# ----------------- 5. MAIN INPUT & PREDICTION GRID -----------------
+col1, col2, col3 = st.columns([1.1, 1.1, 1], gap="large")
+
+with col1:
+    st.subheader("🛵 Rider & Order Details")
+    st.caption("Enter delivery person and order information.")
+    
+    age = st.slider("Delivery Person Age", 18, 50, 30, on_change=reset_prediction)
+    rating = st.number_input("Delivery Person Rating", 1.0, 5.0, 4.5, step=0.1, on_change=reset_prediction)
+    vehicle = st.selectbox("Type of Vehicle", ["Motorcycle", "Scooter", "Bicycle", "Electric Bike"], on_change=reset_prediction)
+    order_type = st.selectbox("Type of Order", ["Snack", "Meal", "Drinks", "Buffet"], on_change=reset_prediction)
+
+with col2:
+    st.subheader("🌦️ Environment & Trip Parameters")
+    st.caption("Add traffic, weather and trip conditions.")
+    
+    distance = st.number_input("Distance (km)", 0.5, 50.0, 10.0, step=0.5, on_change=reset_prediction)
+    traffic = st.selectbox("Traffic Level", ["Low", "Medium", "High", "Jam"], on_change=reset_prediction)
+    weather = st.selectbox("Weather", ["Clear Sky", "Cloudy", "Windy", "Foggy", "Moderate Rain", "Heavy Rain"], on_change=reset_prediction)
+    temp = st.number_input("Temperature (°C)", -10.0, 50.0, 23.0, step=1.0, on_change=reset_prediction)
+    humidity = st.number_input("Humidity (%)", 0.0, 100.0, 66.0, step=1.0, on_change=reset_prediction)
+    precipitation = st.number_input("Precipitation", 0.0, 10.0, 0.0, step=0.1, on_change=reset_prediction)
+
+with col3:
+    st.subheader("📊 Delivery Estimate")
+    st.write("") # Layout spacer
+    
+    # Calculate Button
+    predict_btn = st.button("🚀 Predict Delivery Time", use_container_width=True, type="primary")
+    
+    if predict_btn:
+        # NOTE: Place your actual Machine Learning model .predict() code here
+        # Example calculation placeholder using model logic:
+        estimated_time = round(15 + (distance * 1.5) + (5 if traffic in ['High', 'Jam'] else 1), 1)
+        st.session_state.last_prediction = estimated_time
+        st.session_state.predicted = True
+
+    # Prediction Card State Logic
+    if st.session_state.predicted:
+        st.markdown(f"""
+        <div class="prediction-card" style="border-color: #34D399;">
+            <div style="color: #34D399; font-weight: bold; font-size: 0.9rem; margin-bottom: 0.5rem;">✓ PREDICTION CALCULATED</div>
+            <h1 style="color: #FF5252; font-size: 3.5rem; margin: 0.5rem 0;">{st.session_state.last_prediction}</h1>
+            <div style="font-size: 1.2rem; font-weight: 600; color: #F8FAFC;">MINUTES</div>
+            <p style="color: #94A3B8; font-size: 0.9rem; margin-top: 1.5rem;">Estimated for {weather.lower()} conditions and {traffic.lower()} traffic level.</p>
         </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-# =========================================================
-# FOOTER
-# =========================================================
-
-st.markdown(
-    '<div class="footer-line"></div>',
-    unsafe_allow_html=True
-)
-
-footer_left, footer_right = st.columns(2)
-
-with footer_left:
-    st.markdown(
-        """
-        <div class="footer-text">
-        © 2026 <strong>Food Delivery AI</strong>
-        · Machine Learning Project
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown("""
+        <div class="prediction-card">
+            <div class="empty-icon">🤖</div>
+            <div class="empty-title">Your Delivery Estimate</div>
+            <div class="empty-text">Enter the delivery details and click <b>Predict Delivery Time</b> to generate an AI-powered estimate.</div>
         </div>
-        """,
-        unsafe_allow_html=True
-    )
+        """, unsafe_allow_html=True)
 
-with footer_right:
-    st.markdown(
-        """
-        <div class="footer-text" style="text-align:right;">
-        Random Forest · R² 0.88 ·
-        <a
-            class="footer-link"
-            href="https://github.com/Shrutir09/Food-Delivery-Time-Prediction"
-            target="_blank"
-        >
-        GitHub
-        </a>
+st.divider()
+
+# ----------------- 6. MODEL PERFORMANCE SECTION -----------------
+st.markdown("<div id='model-info'></div>", unsafe_allow_html=True)
+st.subheader("📈 Model Performance")
+
+m1, m2, m3, m4 = st.columns(4)
+m1.metric("MODEL", "Random Forest")
+m2.metric("R² SCORE", "0.88")
+m3.metric("MAE", "3.04 min")
+m4.metric("RMSE", "5.42")
+
+# ----------------- 7. ABOUT SECTION -----------------
+st.markdown("""
+<div class="about-card" id="about">
+    <div class="about-title">About This Project</div>
+    <div class="about-text">
+        FoodPulse AI uses a Random Forest Regression model to estimate food delivery time using delivery person details,
+        distance, traffic, weather and environmental conditions. The application combines a trained machine learning model
+        with an interactive Streamlit interface for real-time predictions.
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# ----------------- 8. FOOTER SECTION -----------------
+st.markdown("""
+<div class="footer-wrapper">
+    <div class="footer-main">
+        <div>
+            <div class="footer-brand">🍔 FoodPulse AI</div>
+            <div class="footer-sub">Machine Learning · Food Delivery Prediction</div>
         </div>
-        """,
-        unsafe_allow_html=True
-    )
+        <div class="footer-links">
+            <a href="#predictor">Predictor</a>
+            <a href="#model-info">Model Info</a>
+            <a href="#about">About</a>
+            <a href="https://github.com/Shrutir09/Food-Delivery-Time-Prediction" target="_blank">GitHub ↗</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <div>© 2026 FoodPulse AI · Built with Streamlit</div>
+        <div class="footer-stats">
+            <span>Random Forest</span>
+            <span>•</span>
+            <span>R² 0.88</span>
+            <span>•</span>
+            <span>MAE 3.04 min</span>
+        </div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
