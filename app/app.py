@@ -7,52 +7,52 @@ st.set_page_config(
     layout="wide"
 )
 
-# 2. Custom Responsive CSS Injection
+# 2. Complete Professional CSS Overhaul
 st.markdown("""
 <style>
-    /* Hide Default Streamlit Elements */
+    /* Hide Default Streamlit Chrome */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
+
+    /* FIX 1: Full-Width Screen Stretch (Removes Blank Space on Big Screens) */
     .block-container {
-        padding-top: 1.5rem;
-        padding-bottom: 2rem;
-        max-width: 1300px;
+        padding-top: 1rem !important;
+        padding-bottom: 2rem !important;
+        max-width: 95% !important; /* Expands across large laptop screens */
+        margin: 0 auto;
     }
 
-    /* Responsive Navbar Styling */
+    /* FIX 2: Modern Responsive Navbar */
     .fp-navbar {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background-color: #1E293B;
-        padding: 1rem 2rem;
-        border-radius: 12px;
+        background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+        padding: 0.8rem 1.8rem;
+        border-radius: 14px;
         border: 1px solid #334155;
         margin-bottom: 2rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     }
     .fp-brand {
         display: flex;
         align-items: center;
-        gap: 12px;
-        font-size: 1.4rem;
+        gap: 10px;
+        font-size: 1.3rem;
         font-weight: 700;
         color: #F8FAFC;
     }
-    .fp-logo {
-        font-size: 1.8rem;
-    }
     .fp-nav-links {
         display: flex;
-        gap: 1.8rem;
+        gap: 1.5rem;
     }
     .fp-nav-links a {
         color: #94A3B8;
         text-decoration: none;
-        font-size: 1rem;
+        font-size: 0.95rem;
         font-weight: 500;
-        transition: color 0.2s ease;
+        transition: all 0.2s ease;
     }
     .fp-nav-links a:hover, .fp-nav-links a.active {
         color: #FF5252;
@@ -61,10 +61,11 @@ st.markdown("""
         display: flex;
         align-items: center;
         gap: 8px;
-        background-color: #064E3B;
+        background-color: rgba(6, 78, 59, 0.6);
+        border: 1px solid #059669;
         color: #34D399;
-        font-size: 0.85rem;
-        padding: 6px 14px;
+        font-size: 0.8rem;
+        padding: 5px 12px;
         border-radius: 20px;
         font-weight: 600;
     }
@@ -73,118 +74,79 @@ st.markdown("""
         height: 8px;
         background-color: #34D399;
         border-radius: 50%;
-        display: inline-block;
+        box-shadow: 0 0 8px #34D399;
     }
 
-    /* Hero Banner Styling */
-    .hero-container {
-        text-align: center;
-        margin-bottom: 2.5rem;
-    }
-    .hero-icon {
-        font-size: 3.5rem;
-        margin-bottom: 0.5rem;
-    }
-    .hero-container h1 {
-        font-size: 2.5rem;
-        font-weight: 800;
-        color: #F8FAFC;
-        margin-bottom: 0.5rem;
-    }
-    .hero-container p {
-        font-size: 1.1rem;
-        color: #94A3B8;
-        max-width: 650px;
-        margin: 0 auto;
-    }
-
-    /* Output Card / Empty Prediction Styling */
-    .prediction-card {
+    /* FIX 3: Styled Input Cards Container */
+    div[data-testid="stColumn"] {
         background: #1E293B;
         border: 1px solid #334155;
         border-radius: 16px;
-        padding: 2.5rem 1.8rem;
+        padding: 1.5rem !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    /* FIX 4: Output Prediction Card Styling */
+    .prediction-card {
+        background: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
+        border: 1px solid #334155;
+        border-radius: 16px;
+        padding: 2rem 1.5rem;
         text-align: center;
-        min-height: 380px;
+        min-height: 350px;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
     }
     .empty-icon {
-        font-size: 3.5rem;
-        margin-bottom: 1rem;
-    }
-    .empty-title {
-        font-size: 1.4rem;
-        font-weight: 700;
-        color: #F8FAFC;
+        font-size: 3rem;
         margin-bottom: 0.8rem;
     }
-    .empty-text {
-        color: #94A3B8;
-        font-size: 1rem;
-        line-height: 1.5;
-    }
-
-    /* About Section Styling */
-    .about-card {
-        background: #1E293B;
-        border: 1px solid #334155;
-        border-radius: 16px;
-        padding: 2rem;
-        margin-top: 2rem;
-        margin-bottom: 3rem;
-    }
-    .about-title {
+    .empty-title {
         font-size: 1.3rem;
         font-weight: 700;
         color: #F8FAFC;
-        margin-bottom: 0.8rem;
+        margin-bottom: 0.5rem;
     }
-    .about-text {
+    .empty-text {
         color: #94A3B8;
-        font-size: 1rem;
-        line-height: 1.6;
+        font-size: 0.95rem;
+        line-height: 1.5;
     }
 
-    /* Separated Responsive Footer Styling */
+    /* HERO Header Section */
+    .hero-container {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    .hero-container h1 {
+        font-size: 2.3rem;
+        font-weight: 800;
+        color: #F8FAFC;
+    }
+    .hero-container p {
+        color: #94A3B8;
+        font-size: 1rem;
+    }
+
+    /* FIX 5: Full Width Clean Footer */
     .footer-wrapper {
-        margin-top: 4rem;
+        margin-top: 3rem;
         border-top: 1px solid #334155;
-        padding-top: 2rem;
-        background-color: #0F172A;
+        padding-top: 1.5rem;
+        width: 100%;
     }
     .footer-main {
         display: flex;
         justify-content: space-between;
         align-items: center;
         flex-wrap: wrap;
-        gap: 1.5rem;
-        margin-bottom: 1.5rem;
+        gap: 1rem;
     }
     .footer-brand {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
         font-weight: 700;
-        color: #FF5252;
-    }
-    .footer-sub {
-        font-size: 0.9rem;
-        color: #64748B;
-        margin-top: 4px;
-    }
-    .footer-links {
-        display: flex;
-        gap: 1.5rem;
-    }
-    .footer-links a {
-        color: #94A3B8;
-        text-decoration: none;
-        font-size: 0.95rem;
-        transition: color 0.2s ease;
-    }
-    .footer-links a:hover {
         color: #FF5252;
     }
     .footer-bottom {
@@ -192,37 +154,36 @@ st.markdown("""
         justify-content: space-between;
         align-items: center;
         flex-wrap: wrap;
-        gap: 1rem;
+        margin-top: 1rem;
         padding-top: 1rem;
         border-top: 1px solid #1E293B;
         color: #64748B;
-        font-size: 0.88rem;
-    }
-    .footer-stats span {
-        margin: 0 4px;
+        font-size: 0.85rem;
     }
 
-    /* Responsive Adjustments for Mobile and Tablets */
+    /* Mobile Responsive Tweaks */
     @media (max-width: 768px) {
-        .fp-navbar, .footer-main, .footer-bottom {
+        .fp-navbar {
             flex-direction: column;
+            gap: 0.8rem;
             text-align: center;
+            padding: 1rem;
+        }
+        .fp-nav-links {
             gap: 1rem;
         }
-        .fp-nav-links, .footer-links {
-            flex-wrap: wrap;
-            justify-content: center;
+        div[data-testid="stColumn"] {
+            margin-bottom: 1rem;
         }
     }
 </style>
 """, unsafe_allow_html=True)
 
-# ----------------- 3. NAVBAR SECTION -----------------
+# ----------------- 3. NAVBAR -----------------
 st.markdown("""
 <div class="fp-navbar">
     <div class="fp-brand">
-        <div class="fp-logo">🍔</div>
-        <span>FoodPulse AI</span>
+        <span>🍔 FoodPulse AI</span>
     </div>
     <div class="fp-nav-links">
         <a href="#predictor" class="active">Predictor</a>
@@ -239,13 +200,12 @@ st.markdown("""
 # ----------------- 4. HERO SECTION -----------------
 st.markdown("""
 <div class="hero-container" id="predictor">
-    <div class="hero-icon">🍔</div>
     <h1>Food Delivery Time Prediction</h1>
-    <p>Configure delivery parameters and let our machine learning model estimate the expected delivery time in real time.</p>
+    <p>Configure delivery parameters and let our machine learning model estimate the expected delivery time.</p>
 </div>
 """, unsafe_allow_html=True)
 
-# Initialize Session State for Dynamic Prediction Reset
+# State reset logic
 if 'predicted' not in st.session_state:
     st.session_state.predicted = False
 if 'last_prediction' not in st.session_state:
@@ -254,12 +214,12 @@ if 'last_prediction' not in st.session_state:
 def reset_prediction():
     st.session_state.predicted = False
 
-# ----------------- 5. MAIN INPUT & PREDICTION GRID -----------------
-col1, col2, col3 = st.columns([1.1, 1.1, 1], gap="large")
+# ----------------- 5. MAIN INPUT & PREDICTION CARDS -----------------
+col1, col2, col3 = st.columns([1.1, 1.1, 1], gap="medium")
 
 with col1:
-    st.subheader("🛵 Rider & Order Details")
-    st.caption("Enter delivery person and order information.")
+    st.markdown("### 🛵 Rider & Order Details")
+    st.caption("Enter delivery person and order details.")
     
     age = st.slider("Delivery Person Age", 18, 50, 30, on_change=reset_prediction)
     rating = st.number_input("Delivery Person Rating", 1.0, 5.0, 4.5, step=0.1, on_change=reset_prediction)
@@ -267,7 +227,7 @@ with col1:
     order_type = st.selectbox("Type of Order", ["Snack", "Meal", "Drinks", "Buffet"], on_change=reset_prediction)
 
 with col2:
-    st.subheader("🌦️ Environment & Trip Parameters")
+    st.markdown("### 🌦️ Environment & Trip")
     st.caption("Add traffic, weather and trip conditions.")
     
     distance = st.number_input("Distance (km)", 0.5, 50.0, 10.0, step=0.5, on_change=reset_prediction)
@@ -278,27 +238,24 @@ with col2:
     precipitation = st.number_input("Precipitation", 0.0, 10.0, 0.0, step=0.1, on_change=reset_prediction)
 
 with col3:
-    st.subheader("📊 Delivery Estimate")
-    st.write("") # Layout spacer
+    st.markdown("### 📊 Delivery Estimate")
+    st.caption("Generated output prediction.")
     
-    # Calculate Button
     predict_btn = st.button("🚀 Predict Delivery Time", use_container_width=True, type="primary")
     
     if predict_btn:
-        # NOTE: Place your actual Machine Learning model .predict() code here
-        # Example calculation placeholder using model logic:
+        # Pass features to your model here
         estimated_time = round(15 + (distance * 1.5) + (5 if traffic in ['High', 'Jam'] else 1), 1)
         st.session_state.last_prediction = estimated_time
         st.session_state.predicted = True
 
-    # Prediction Card State Logic
     if st.session_state.predicted:
         st.markdown(f"""
         <div class="prediction-card" style="border-color: #34D399;">
-            <div style="color: #34D399; font-weight: bold; font-size: 0.9rem; margin-bottom: 0.5rem;">✓ PREDICTION CALCULATED</div>
-            <h1 style="color: #FF5252; font-size: 3.5rem; margin: 0.5rem 0;">{st.session_state.last_prediction}</h1>
-            <div style="font-size: 1.2rem; font-weight: 600; color: #F8FAFC;">MINUTES</div>
-            <p style="color: #94A3B8; font-size: 0.9rem; margin-top: 1.5rem;">Estimated for {weather.lower()} conditions and {traffic.lower()} traffic level.</p>
+            <div style="color: #34D399; font-weight: bold; font-size: 0.85rem;">✓ PREDICTION CALCULATED</div>
+            <h1 style="color: #FF5252; font-size: 3.2rem; margin: 0.5rem 0;">{st.session_state.last_prediction}</h1>
+            <div style="font-size: 1.1rem; font-weight: 600; color: #F8FAFC;">MINUTES</div>
+            <p style="color: #94A3B8; font-size: 0.85rem; margin-top: 1rem;">Calculated for {weather.lower()} and {traffic.lower()} traffic.</p>
         </div>
         """, unsafe_allow_html=True)
     else:
@@ -310,9 +267,9 @@ with col3:
         </div>
         """, unsafe_allow_html=True)
 
-st.divider()
+st.write("") # Spacing
 
-# ----------------- 6. MODEL PERFORMANCE SECTION -----------------
+# ----------------- 6. MODEL PERFORMANCE -----------------
 st.markdown("<div id='model-info'></div>", unsafe_allow_html=True)
 st.subheader("📈 Model Performance")
 
@@ -324,40 +281,34 @@ m4.metric("RMSE", "5.42")
 
 # ----------------- 7. ABOUT SECTION -----------------
 st.markdown("""
-<div class="about-card" id="about">
-    <div class="about-title">About This Project</div>
-    <div class="about-text">
+<div style="background: #1E293B; border: 1px solid #334155; border-radius: 16px; padding: 1.5rem; margin-top: 2rem;" id="about">
+    <h3 style="color: #F8FAFC; margin-bottom: 0.5rem;">About This Project</h3>
+    <p style="color: #94A3B8; line-height: 1.6; font-size: 0.95rem;">
         FoodPulse AI uses a Random Forest Regression model to estimate food delivery time using delivery person details,
         distance, traffic, weather and environmental conditions. The application combines a trained machine learning model
         with an interactive Streamlit interface for real-time predictions.
-    </div>
+    </p>
 </div>
 """, unsafe_allow_html=True)
 
-# ----------------- 8. FOOTER SECTION -----------------
+# ----------------- 8. FOOTER -----------------
 st.markdown("""
 <div class="footer-wrapper">
     <div class="footer-main">
         <div>
             <div class="footer-brand">🍔 FoodPulse AI</div>
-            <div class="footer-sub">Machine Learning · Food Delivery Prediction</div>
+            <div style="color: #64748B; font-size: 0.85rem;">Machine Learning · Food Delivery Prediction</div>
         </div>
-        <div class="footer-links">
-            <a href="#predictor">Predictor</a>
-            <a href="#model-info">Model Info</a>
-            <a href="#about">About</a>
-            <a href="https://github.com/Shrutir09/Food-Delivery-Time-Prediction" target="_blank">GitHub ↗</a>
+        <div style="display: flex; gap: 1.2rem;">
+            <a href="#predictor" style="color: #94A3B8; text-decoration: none;">Predictor</a>
+            <a href="#model-info" style="color: #94A3B8; text-decoration: none;">Model Info</a>
+            <a href="#about" style="color: #94A3B8; text-decoration: none;">About</a>
+            <a href="https://github.com/Shrutir09/Food-Delivery-Time-Prediction" target="_blank" style="color: #FF5252; text-decoration: none;">GitHub ↗</a>
         </div>
     </div>
     <div class="footer-bottom">
         <div>© 2026 FoodPulse AI · Built with Streamlit</div>
-        <div class="footer-stats">
-            <span>Random Forest</span>
-            <span>•</span>
-            <span>R² 0.88</span>
-            <span>•</span>
-            <span>MAE 3.04 min</span>
-        </div>
+        <div>Random Forest • R² 0.88 • MAE 3.04 min</div>
     </div>
 </div>
 """, unsafe_allow_html=True)
