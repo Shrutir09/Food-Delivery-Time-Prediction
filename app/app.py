@@ -178,7 +178,7 @@ st.markdown("""
         box-shadow: 0 6px 20px rgba(255, 82, 82, 0.45) !important;
     }
 
-    /* PREMIUM BEAUTIFUL FOOTER STYLING */
+    /* FOOTER STYLING */
     .fp-footer-card {
         margin-top: 4rem;
         background: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
@@ -230,18 +230,34 @@ st.markdown("""
     .footer-col-links a:hover {
         color: #FF5252;
     }
-    .footer-badge-link {
+
+    /* Social Icons Styling */
+    .footer-social-icons {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+    .social-icon-btn {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        background: rgba(255, 82, 82, 0.1);
-        border: 1px solid rgba(255, 82, 82, 0.3);
-        color: #FF5252 !important;
-        padding: 8px 16px;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 10px;
-        font-weight: 600 !important;
-        width: fit-content;
+        color: #CBD5E1 !important;
+        font-size: 1.1rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
     }
+    .social-icon-btn:hover {
+        background: rgba(255, 82, 82, 0.15);
+        border-color: #FF5252;
+        color: #FF5252 !important;
+        transform: translateY(-3px);
+    }
+
     .footer-bottom-bar {
         display: flex;
         justify-content: space-between;
@@ -291,7 +307,6 @@ st.markdown("""
     <div class="fp-nav-links">
         <a href="#predictor" class="active">Predictor</a>
         <a href="#model-info">Model Info</a>
-        <a href="https://github.com/Shrutir09/Food-Delivery-Time-Prediction" target="_blank">Repository</a>
     </div>
     <div class="fp-status">
         <span class="status-dot"></span>
@@ -434,11 +449,12 @@ st.markdown("""
             </div>
         </div>
         <div>
-            <div class="footer-col-title">SOURCE CODE</div>
-            <div class="footer-col-links">
-                <a href="https://github.com/Shrutir09/Food-Delivery-Time-Prediction" target="_blank" class="footer-badge-link">
-                    <span>GitHub Project</span> ↗
-                </a>
+            <div class="footer-col-title">CONNECT WITH US</div>
+            <div class="footer-social-icons">
+                <a href="https://twitter.com" target="_blank" class="social-icon-btn" title="Twitter / X">𝕏</a>
+                <a href="https://linkedin.com" target="_blank" class="social-icon-btn" title="LinkedIn">in</a>
+                <a href="https://facebook.com" target="_blank" class="social-icon-btn" title="Facebook">f</a>
+                <a href="mailto:support@foodpulse.ai" class="social-icon-btn" title="Email Us">✉</a>
             </div>
         </div>
     </div>
